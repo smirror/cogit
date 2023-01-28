@@ -1,0 +1,51 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "src/**/*.rs"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "src/**/*.rs"
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Format code
+        run: |
+          cargo fmt --all
+
+      - name: check for modified files
+        id: git-check
+        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+
+      - name: push changes
+        id: push-changes
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git config --global user.email "23025996+smirror@users.noreply.github.com"
+          git config --global user.name "smirror"
+          git config pull.rebase true
+          git remote set-url origin https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}
+          git add .
+          git commit -am "Automated Cargo fmt changes"
+          git pull origin ${{github.event.pull_request.head.ref}}
+          git push origin HEAD:${{github.event.pull_request.head.ref}}
+
+      - name: clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+
+      - name: Run tests
+        run: cargo test --verbose
