@@ -7,9 +7,9 @@ enum Type {
 }
 
 impl Type {
-    fn string(&self) -> &str {
+    fn string(&self) -> String {
         let objectTypeString: [&str; 5] = ["undefined", "commit", "tree", "blob", "tag"];
-        return objectTypeString.index(self.type_id());
+        return objectTypeString.index(self.type_id()).to_string();
     }
 }
 
