@@ -25,22 +25,20 @@ jobs:
         run: |
           cargo fmt --all
 
-      - name: check for modified files
-        id: git-check
-        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
-
       - name: push changes
         id: push-changes
         if: steps.git-check.outputs.modified == 'true'
         run: |
-          git config --global user.email "23025996+smirror@users.noreply.github.com"
-          git config --global user.name "smirror"
-          git config pull.rebase true
           git remote set-url origin https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}
-          git add .
-          git commit -am "Automated Cargo fmt changes"
-          git pull origin ${{github.event.pull_request.head.ref}}
-          git push origin HEAD:${{github.event.pull_request.head.ref}}
+          git config --global user.email "23025996+${GITHUB_ACTOR}@users.noreply.github.com"
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config pull.rebase true
+          if (git diff --shortstat | grep '[0-9]'); then \
+            git add .; \
+            git commit -m "Automated Cargo fmt changes"; \
+            git pull origin ${{github.event.pull_request.head.ref}}; \
+            git push origin HEAD:${{github.event.pull_request.head.ref}}
+          fi
 
       - name: clippy
         uses: actions-rs/cargo@v1
