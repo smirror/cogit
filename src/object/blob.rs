@@ -37,9 +37,7 @@ impl Blob {
 
     // 書き込むためフォーマットにするメソッド
     pub fn as_bytes(&self) -> Vec<u8> {
-        let header = format!("blob {}\0", self.size);
-        let store = format!("{}{}", header, self.content);
-
+        let store = format!("blob {}\0{}", self.size, self.content);
         Vec::from(store.as_bytes())
     }
 
