@@ -1,3 +1,6 @@
+pub mod cmd;
+pub mod object;
+
 extern crate exitcode;
 
 use std::env;
@@ -5,8 +8,8 @@ use std::ops::Index;
 use std::process::exit;
 
 fn main() {
-    let args:Vec<String> = env::args().collect();
-    if args.len() == 1{
+    let args: Vec<String> = env::args().collect();
+    if args.len() == 1 {
         // TODO: add help messages
         println!("plz subcommand.");
         exit(exitcode::OK)
@@ -33,6 +36,10 @@ fn main() {
         }
         "log" => {
             println!("log")
+        }
+        "hash-object" => {
+            let blob = cmd::hash_object::hash_object(args.get(2).unwrap().clone());
+            println!("{}", blob)
         }
         _ => {
             println!("sorry. not {} subcommand.", args.index(1));
