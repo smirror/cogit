@@ -14,13 +14,15 @@ impl fmt::Display for Blob {
 }
 
 impl Blob {
-    // 構造体を作成する関数new, from
+    // 構造体を作成する関数new
     pub fn new(content: String) -> Self {
         Self {
             size: content.len(),
             content,
         }
     }
+
+    // 変換するための関数
     pub fn from(bytes: &[u8]) -> Option<Self> {
         let content = String::from_utf8(bytes.to_vec());
 
