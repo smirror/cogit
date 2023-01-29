@@ -25,10 +25,6 @@ jobs:
         run: |
           cargo fmt --all
 
-#      - name: check for modified files
-#        id: git-check
-#        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
-
       - name: push changes
         id: push-changes
         if: steps.git-check.outputs.modified == 'true'
@@ -43,6 +39,7 @@ jobs:
             git pull origin ${{github.event.pull_request.head.ref}}; \
             git push origin HEAD:${{github.event.pull_request.head.ref}}
           fi
+
       - name: clippy
         uses: actions-rs/cargo@v1
         with:
