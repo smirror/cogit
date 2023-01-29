@@ -38,8 +38,10 @@ fn main() {
             println!("log")
         }
         "hash-object" => {
-            let blob = cmd::hash_object::hash_object(args.get(2).unwrap().clone());
-            println!("{}", blob)
+            println!(
+                "{}",
+                cmd::hash_object::hash_object(args.get(2).unwrap().clone())
+            )
         }
         _ => {
             println!("sorry. not {} subcommand.", args.index(1));

@@ -45,6 +45,6 @@ impl Blob {
 
     // hash値を計算するメソッド
     pub fn calc_hash(&self) -> Vec<u8> {
-        Vec::from(Sha1::digest(&self.as_bytes()).as_slice())
+        Vec::from(Sha1::digest(self.as_bytes()).as_slice())
     }
 }
