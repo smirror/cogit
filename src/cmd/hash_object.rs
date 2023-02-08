@@ -13,11 +13,7 @@ pub fn hash_object(path: String) -> String {
 
     let blob = Blob::from(&buf).ok_or(io::Error::from(io::ErrorKind::InvalidInput));
     match blob {
-        Ok(blob) => {
-            hex::encode(blob.calc_hash())
-        }
-        Err(blob) => {
-            blob.to_string()
-        }
+        Ok(blob) => hex::encode(blob.calc_hash()),
+        Err(blob) => blob.to_string(),
     }
 }
