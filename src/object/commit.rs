@@ -1,8 +1,7 @@
 use chrono::{DateTime, FixedOffset, TimeZone, Utc};
-#[cfg(feature = "json")]
-use serde::Serialize;
 use sha1::{Digest, Sha1};
 use std::fmt;
+use sha1::digest::typenum::private::Trim;
 
 #[derive(Debug, Clone)]
 pub struct User {
@@ -13,10 +12,8 @@ pub struct User {
 
 #[derive(Debug, Clone)]
 pub struct Commit {
-    pub hash: sha1::SHA1,
-    pub size: int,
-    pub tree: sha1::SHA1,
-    pub parent: Option<sha1::SHA1>,
+    pub tree: Sha1,
+    pub parent: Option<Sha1>,
     pub author: User,
     pub committer: User,
     pub message: String,
@@ -79,17 +76,13 @@ impl User {
 
 impl Commit {
     pub fn new(
-        hash: sha1::SHA1,
-        size: int,
-        tree: sha1::SHA1,
-        parent: Option<sha1::SHA1>,
+        tree: Sha1,
+        parent: Option<Sha1>,
         author: User,
         committer: User,
         message: String,
     ) -> Self {
         Self {
-            hash,
-            size,
             tree,
             parent,
             author,

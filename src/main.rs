@@ -29,7 +29,7 @@ fn main() {
             println!("diff")
         }
         "init" => {
-            println!("init")
+            println!("{}", cmd::init::init())
         }
         "status" => {
             println!("status")
