@@ -11,7 +11,7 @@ pub struct Object {
 
 impl fmt::Display for Object {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Hash:{}, Type:{}, Size:{}, Data", self.Hash, self.Type, self.Size, self.Data)
+        write!(f, "Hash:{}, Type:{}, Size:{}, Data{}", self.Hash, self.Type, self.Size, self.Data)
     }
 }
 
