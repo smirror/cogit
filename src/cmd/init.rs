@@ -10,7 +10,7 @@ pub fn init() -> String {
     // mkdir .cogit
     match fs::create_dir("./.cogit") {
         Ok(_) => {}
-        Err(_) => {
+        Err(_) => {}
     };
 
     // mkdir .cogit/refs
