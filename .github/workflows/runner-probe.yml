@@ -1,0 +1,26 @@
+name: runner-probe
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/runner-probe.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Runner alive
+        run: |
+          echo "runner_started=true" | tee runner-probe.txt
+          python --version
+          uname -a
+      - name: Upload probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: runner-probe
+          path: runner-probe.txt
+          retention-days: 1
