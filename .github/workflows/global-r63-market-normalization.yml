@@ -1,0 +1,56 @@
+name: global-r63-market-normalization
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/global-r63-market-normalization.yml"
+      - "research/global_r63_market_normalization.py"
+      - "research/test_global_r63_market_normalization.py"
+      - "research/global_r63_reference.py.gz.b64.part*"
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pandas numpy requests yfinance beautifulsoup4 pypdf lxml html5lib tabulate
+      - name: Assemble and validate payload
+        run: |
+          cat research/global_r63_reference.py.gz.b64.part{1,2,3,4} | tr -d '\n\r' > /tmp/global_r63.b64
+          base64 -d /tmp/global_r63.b64 > /tmp/global_r63.py.gz
+          echo "01ef00e25838198f0772a3929518edcd9c250799d8109924ef49229a84ce3f3b  /tmp/global_r63.py.gz" | sha256sum -c -
+          gzip -dc /tmp/global_r63.py.gz > /tmp/global_r63_reference.py
+      - name: Validate code syntax
+        run: python -m py_compile /tmp/global_r63_reference.py research/global_r63_market_normalization.py research/test_global_r63_market_normalization.py
+      - name: Run unit tests
+        run: python -m unittest research/test_global_r63_market_normalization.py
+      - name: Run market normalization backtest
+        env:
+          OUTDIR: ${{ github.workspace }}/global_r63_market_normalization_results
+        run: python research/global_r63_market_normalization.py
+      - name: Save environment freeze and SHA256 manifest
+        run: |
+          OUTDIR="${{ github.workspace }}/global_r63_market_normalization_results"
+          python -m pip freeze > "$OUTDIR/pip_freeze.txt"
+          cd "$OUTDIR"
+          sha256sum $(find . -maxdepth 1 -type f ! -name 'SHA256SUMS' | sed 's|^\./||' | sort) > SHA256SUMS
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-r63-market-normalization-results
+          path: global_r63_market_normalization_results
+          if-no-files-found: warn
+          retention-days: 7
