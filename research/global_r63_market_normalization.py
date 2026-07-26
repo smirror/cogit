@@ -522,6 +522,8 @@ def compute_file_hash(filepath: Path) -> str:
 
 def sanitize_for_json(obj: Any) -> Any:
     """Recursively converts NaN and Infinity floats to None for valid strict JSON."""
+    if isinstance(obj, (np.bool_, bool)):
+        return bool(obj)
     if isinstance(obj, float):
         if math.isnan(obj) or math.isinf(obj):
             return None
@@ -535,8 +537,6 @@ def sanitize_for_json(obj: Any) -> Any:
     if isinstance(obj, (np.floating, float)):
         val = float(obj)
         return None if (math.isnan(val) or math.isinf(val)) else val
-    if isinstance(obj, (np.bool_, bool)):
-        return bool(obj)
     return obj
 
 
@@ -700,8 +700,8 @@ def main() -> None:
             m_row = {
                 "scenario": scenario_name,
                 "segment": seg_name,
-                "segment_start": s_start,
-                "segment_end": s_end,
+                "segment_start": sub_ret.index.min().date().isoformat(),
+                "segment_end": sub_ret.index.max().date().isoformat(),
                 **m,
                 **{f"ew_{k}": v for k, v in ew_m.items() if k != "days"},
                 "total_return_minus_ew": m["total_return"] - ew_m["total_return"] if pd.notna(m["total_return"]) and pd.notna(ew_m["total_return"]) else np.nan,

@@ -10,10 +10,21 @@ from research.global_r63_market_normalization import (
     compute_market_percentiles,
     rank_assets_df,
     compute_diagnostics,
+    sanitize_for_json,
 )
 
 
 class TestGlobalR63MarketNormalization(unittest.TestCase):
+
+    def test_json_safety_flags_remain_booleans(self):
+        sanitized = sanitize_for_json({
+            "review_only": True,
+            "live_order_enabled": np.bool_(False),
+            "missing_metric": np.nan,
+        })
+        self.assertIs(sanitized["review_only"], True)
+        self.assertIs(sanitized["live_order_enabled"], False)
+        self.assertIsNone(sanitized["missing_metric"])
 
     def test_sleeve_mapping(self):
         self.assertEqual(get_broad_sleeve("usa"), "usa")
